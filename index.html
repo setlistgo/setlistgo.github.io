@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SetListify - Professional Setlist Management</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Metropolis:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #161616;
+        --bg-tertiary: #1f1f1f;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0b0;
+        --text-muted: #666666;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --accent-light: rgba(59, 130, 246, 0.1);
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.3);
+        --desktop-nav-height: 80px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Metropolis", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Header & Navigation */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 100;
+        transition: all 0.3s ease;
+        height: var(--desktop-nav-height);
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        padding: 0 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        z-index: 101;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo img {
+        height: 40px;
+        width: auto;
+      }
+
+      .logo span {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
+
+      .nav-links .cta-button {
+        color: white;
+      }
+
+      .cta-button {
+        background: var(--accent);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+      }
+
+      .cta-button:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      /* Mobile Menu */
+      .menu-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 101;
+      }
+
+      .menu-toggle span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background-color: var(--text-primary);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 75%;
+        max-width: 300px;
+        height: 100vh;
+        background: var(--bg-secondary);
+        padding: 6rem 2rem 2rem;
+        transition: right 0.4s ease;
+        z-index: 99;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .mobile-nav.active {
+        right: 0;
+      }
+
+      .mobile-nav a {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        transition: background 0.3s ease;
+      }
+
+      .mobile-nav a:hover {
+        background: var(--bg-tertiary);
+      }
+
+      .mobile-nav .cta-button {
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 98;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding-top: var(--desktop-nav-height);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(59, 130, 246, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(239, 68, 68, 0.1) 0%,
+            transparent 50%
+          );
+        z-index: -1;
+      }
+
+      .hero-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-text {
+        text-align: left;
+      }
+
+      .hero-text h1 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+      }
+
+      .hero-text p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+        padding: 1rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        display: inline-block;
+        text-align: center;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-primary);
+        padding: 1rem 1.8rem;
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-top: 1rem;
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .hero-visual {
+        position: relative;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1200px;
+      }
+
+      .mockup {
+        background: var(--bg-secondary);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+        animation: float 6s ease-in-out infinite;
+        width: 100%;
+        max-width: 400px;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: perspective(1000px) rotateY(-15deg) rotateX(5deg)
+            translateY(0px);
+        }
+        50% {
+          transform: perspective(1000px) rotateY(-15deg) rotateX(5deg)
+            translateY(-20px);
+        }
+      }
+
+      .mockup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .mockup-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+
+      .mockup-tabs {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .mockup-tab {
+        padding: 0.5rem 1rem;
+        background: var(--accent);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .mockup-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .mockup-song {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: var(--bg-tertiary);
+        border-radius: 6px;
+        border-left: 3px solid var(--accent);
+      }
+
+      .mockup-number {
+        background: var(--accent);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+
+      /* Mobile Hero - 3D Setlist Background */
+      .mobile-hero {
+        display: none;
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        padding: 120px 1.5rem 2rem;
+      }
+
+      .mobile-hero-content {
+        position: relative;
+        z-index: 3;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .mobile-hero-text {
+        text-align: left;
+      }
+
+      .mobile-hero-text h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+      }
+
+      .mobile-hero-text p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+      }
+
+      .mobile-hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .mobile-setlist-3d {
+        position: absolute;
+        top: 90%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotateX(20deg) rotateY(10deg);
+        transform-style: preserve-3d;
+        width: 300px;
+        height: 400px;
+        perspective: 1000px;
+        z-index: 1;
+        opacity: 0.2;
+        transition: transform 0.3s ease;
+      }
+
+      .setlist-card {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        transform: translateZ(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .setlist-song {
+        padding: 0.8rem;
+        background: var(--bg-tertiary);
+        margin-bottom: 0.8rem;
+        border-radius: 8px;
+        border-left: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 0.9rem;
+      }
+
+      .setlist-number {
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        color: white;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+
+      /* Features Section */
+      .features {
+        padding: 6rem 0;
+        background: var(--bg-secondary);
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .feature-card {
+        background: var(--bg-tertiary);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--accent-light);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        padding: 6rem 0;
+        background: linear-gradient(
+          135deg,
+          var(--bg-primary) 0%,
+          var(--bg-secondary) 100%
+        );
+        text-align: center;
+      }
+
+      .cta-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .cta-description {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--bg-primary);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 3rem 0 1rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .footer-section p,
+      .footer-section a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        line-height: 1.8;
+      }
+
+      .footer-section a:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+      }
+
+      /* About Section */
+      .about-section {
+        padding: 6rem 0;
+        background: var(--bg-secondary);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .about-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+          circle at 80% 20%,
+          rgba(118, 75, 162, 0.1) 0%,
+          transparent 50%
+        );
+        z-index: 0;
+      }
+
+      .about-block {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 6rem;
+        opacity: 0.95;
+        transition: opacity 0.3s ease;
+      }
+
+      .about-block:last-child {
+        margin-bottom: 0;
+      }
+
+      .about-block:hover {
+        opacity: 1;
+      }
+
+      .about-block.reverse {
+        grid-template-areas: "image text";
+      }
+
+      .about-block:not(.reverse) {
+        grid-template-areas: "text image";
+      }
+
+      .about-text {
+        grid-area: text;
+      }
+
+      .about-image {
+        grid-area: image;
+      }
+
+      .about-block.reverse {
+        grid-template-areas: "image text";
+      }
+
+      .about-block:not(.reverse) {
+        grid-template-areas: "text image";
+      }
+
+      .about-text {
+        grid-area: text;
+      }
+
+      .about-image {
+        grid-area: image;
+      }
+
+      .about-header {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+
+      .about-header .section-title,
+      .about-header .section-subtitle {
+        margin-left: 0;
+        text-align: left;
+      }
+
+      .about-header .section-subtitle {
+        margin: 0;
+        max-width: none;
+      }
+
+      .about-description {
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+
+      .about-stats {
+        display: flex;
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .stat-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+      }
+
+      .about-image {
+        position: relative;
+      }
+
+      .image-container {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+        transition: all 0.5s ease;
+      }
+
+      .about-block.reverse .image-container {
+        transform: perspective(1000px) rotateY(5deg) rotateX(5deg);
+      }
+
+      .image-container:hover {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+      }
+
+      .image-gradient-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          to bottom right,
+          rgba(102, 126, 234, 0.3),
+          rgba(118, 75, 162, 0.3)
+        );
+        z-index: 1;
+      }
+
+      .about-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Modal Styles */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+
+      .modal.active .modal-content {
+        transform: translateY(0);
+      }
+
+      .modal-content h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 2rem;
+      }
+
+      /* Contact Modal Improvements */
+      .contact-buttons {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+        justify-content: center;
+      }
+      .contact-buttons .btn-secondary {
+        flex: 0.5;
+      }
+
+      .contact-btn {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Contact Modal Specific */
+      .contact-info {
+        margin: 2rem 0;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .contact-item i {
+        font-size: 1.2rem;
+        color: var(--accent);
+      }
+
+      .discord-container {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      .discord-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #5865f2;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .discord-button:hover {
+        background: #4752c4;
+        transform: translateY(-2px);
+      }
+
+      .discord-button i {
+        font-size: 1.2rem;
+      }
+
+      /* Footer Improvements */
+      .footer-email {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+      }
+
+      .band-shoutout {
+        margin-top: 0.5rem;
+        font-style: italic;
+        color: var(--text-secondary);
+      }
+
+      .band-shoutout a {
+        color: var(--accent);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .band-shoutout a:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+      }
+
+      /* Footer Buttons - Toned Down */
+      .footer-discord {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        display: inline-flex;
+        background: rgba(88, 101, 242, 0.15);
+        color: var(--text-primary);
+        border: 1px solid rgba(88, 101, 242, 0.3);
+      }
+
+      .footer-discord:hover {
+        background: rgba(88, 101, 242, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .donation-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 95, 95, 0.15);
+        color: var(--text-primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 95, 95, 0.3);
+      }
+
+      .donation-button:hover {
+        background: rgba(255, 95, 95, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .donation-button i {
+        font-size: 1.2rem;
+      }
+
+      /* Discord Link in Footer */
+      .discord-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .discord-link:hover {
+        color: #5865f2;
+      }
+
+      .discord-link i {
+        font-size: 1.1rem;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .header {
+          height: 70px;
+        }
+
+        .hero {
+          display: none;
+        }
+
+        .mobile-hero {
+          display: block;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .menu-toggle {
+          display: flex;
+        }
+
+        .features {
+          padding: 4rem 0;
+        }
+
+        .section-header {
+          margin-bottom: 3rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .cta-section {
+          padding: 4rem 0;
+        }
+
+        .cta-title {
+          font-size: 2rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .feature-card {
+          padding: 1.75rem;
+        }
+
+        .footer-content {
+          grid-template-columns: 1fr;
+        }
+
+        .btn-primary {
+          text-align: left;
+        }
+
+        .about-block,
+        .about-block.reverse {
+          display: block;
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            "image"
+            "text";
+          gap: 2rem;
+          margin-bottom: 4rem;
+        }
+
+        /* More specific selector to override desktop styles */
+        .about-block .about-image,
+        .about-block.reverse .about-image,
+        .about-block:not(.reverse) .about-image {
+          order: -1;
+        }
+
+        /* Force grid areas to be respected */
+        .about-block > .about-text,
+        .about-block.reverse > .about-text {
+          grid-area: text !important;
+        }
+
+        .about-block > .about-image,
+        .about-block.reverse > .about-image {
+          grid-area: image !important;
+        }
+
+        .about-section {
+          padding: 4rem 0;
+        }
+
+        .about-stats {
+          flex-direction: column;
+          gap: 1.5rem;
+          align-items: flex-start;
+        }
+
+        .stat-card {
+          flex-direction: row;
+          gap: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .mobile-hero-text h1 {
+          font-size: 2rem;
+        }
+
+        .mobile-hero-text p {
+          font-size: 1rem;
+        }
+
+        .mobile-setlist-3d {
+          width: 250px;
+          height: 350px;
+        }
+
+        .section-title {
+          font-size: 1.8rem;
+        }
+
+        .cta-title {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav container">
+        <div class="logo">
+          <img src="images/logo.png" alt="SetListify Logo" height="40" />
+          <span>SetListify</span>
+        </div>
+
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="app.html" class="cta-button">Create Setlist</a></li>
+        </ul>
+
+        <button class="menu-toggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+
+      <div class="mobile-nav" id="mobileNav">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="app.html" class="cta-button">Create Setlist</a>
+      </div>
+
+      <div class="overlay" id="overlay"></div>
+    </header>
+
+    <!-- Desktop Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1>Every good show needs a setlist</h1>
+            <p>
+              Make your setlists with <b>SetListify</b> so you never lose track
+              again!
+            </p>
+            <div class="hero-buttons">
+              <a href="app.html" class="btn-primary">Start Creating FOR FREE</a>
+              <a href="#features" class="btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-stats">
+              <div class="stat">
+                <span>🥳</span>
+                <span>Completely Free</span>
+              </div>
+              <div class="stat">
+                <span>🎵</span>
+                <span>Songs and Midshow</span>
+              </div>
+              <div class="stat">
+                <span>📄</span>
+                <span>PDF Export</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="mockup">
+              <div class="mockup-header">
+                <div class="mockup-title">Current Setlist</div>
+                <div class="mockup-tabs">
+                  <div class="mockup-tab">Setlist</div>
+                </div>
+              </div>
+              <div class="mockup-content">
+                <div class="mockup-song">
+                  <div class="mockup-number">1</div>
+                  <div>Wonderwall</div>
+                </div>
+                <div class="mockup-song">
+                  <div class="mockup-number">2</div>
+                  <div>Sweet Child O Mine</div>
+                </div>
+                <div class="mockup-song">
+                  <div class="mockup-number">3</div>
+                  <div>Hotel California</div>
+                </div>
+                <div class="mockup-song">
+                  <div class="mockup-number">4</div>
+                  <div>Bohemian Rhapsody</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Hero with 3D Setlist Background -->
+    <section class="mobile-hero" id="mobileHero">
+      <div class="mobile-setlist-3d" id="setlist3d">
+        <div class="setlist-card">
+          <div class="setlist-song">
+            <div class="setlist-number">1</div>
+            <div>Wonderwall</div>
+          </div>
+          <div class="setlist-song">
+            <div class="setlist-number">2</div>
+            <div>Sweet Child O Mine</div>
+          </div>
+          <div class="setlist-song">
+            <div class="setlist-number">3</div>
+            <div>Hotel California</div>
+          </div>
+          <div class="setlist-song">
+            <div class="setlist-number">4</div>
+            <div>Bohemian Rhapsody</div>
+          </div>
+          <div class="setlist-song">
+            <div class="setlist-number">5</div>
+            <div>Stairway to Heaven</div>
+          </div>
+          <div class="setlist-song">
+            <div class="setlist-number">6</div>
+            <div>Sweet Home Alabama</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-hero-content">
+        <div class="mobile-hero-text">
+          <h1>Every good show needs a setlist</h1>
+          <p>
+            Make your setlists with <b>SetListify</b> so you never lose track
+            again!
+          </p>
+          <div class="mobile-hero-buttons">
+            <a href="app.html" class="btn-primary">Start Creating</a>
+            <a href="#features" class="btn-secondary">Learn More</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <span>🎵</span>
+              <span>Unlimited Songs</span>
+            </div>
+            <div class="stat">
+              <span>📊</span>
+              <span>Vibe Analytics</span>
+            </div>
+            <div class="stat">
+              <span>📄</span>
+              <span>PDF Export</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Everything You Need</h2>
+          <p class="section-subtitle">
+            Powerful features designed to streamline your performance
+            preparation
+          </p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎵</div>
+            <h3 class="feature-title">Stay Organized</h3>
+            <p class="feature-description">
+              Keep a <b>database of songs</b> you can play, complete with
+              duration and vibe.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <h3 class="feature-title">Easy to Use</h3>
+            <p class="feature-description">
+              <b>No sign up</b>, no hassle. Arrange songs and midshow to your
+              liking in a nice simple <b>drag and drop</b> interface.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3 class="feature-title">Analyze and improve</h3>
+            <p class="feature-description">
+              Categorize songs by energy level and mood to create perfectly
+              balanced performances. <b>See duration</b> and other statistics.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🫶</div>
+            <h3 class="feature-title">Cooperate with band members</h3>
+            <p class="feature-description">
+              Share the project with your band members using a simple link. They
+              don't have to create an account and everything is free.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3 class="feature-title">Professional Export</h3>
+            <p class="feature-description">
+              Print a stage and backstage versions of the set list so that both
+              the band members on stage and organizers know what's happening.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔭</div>
+            <h3 class="feature-title">And much more…</h3>
+            <p class="feature-description">
+              Color coded tracks by vibe, graphs, time stamps, mid-show tools,
+              mobile support and more
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section" id="about">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">About SetListify</h2>
+          <p class="section-subtitle">
+            How we're making setlist management easier for musicians everywhere
+          </p>
+        </div>
+
+        <div class="about-block">
+          <div class="about-text">
+            <div class="about-header">
+              <h2 class="section-title">Uhh, this is SetListify</h2>
+              <p class="section-subtitle">
+                How we saved time and hope to save yours
+              </p>
+            </div>
+            <p class="about-description">
+              I am Doriello from The Creaks. We always use set lists for live
+              performances, as do you, likely. We happened to stumble over a
+              certain issue though - as we were playing more and more often, we
+              wanted to give our fans a different show every time, sometimes the
+              venue wanted a shorter or longer show, sometimes we wanted to add
+              some mid-show commentary and it soon became a hassle to make a new
+              set list every time with different order and new ideas.
+            </p>
+          </div>
+          <div class="about-image">
+            <div class="image-container">
+              <div class="image-gradient-overlay"></div>
+              <img
+                src="https://images.unsplash.com/photo-1501612780327-45045538702b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                alt="Live music performance"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="about-block reverse">
+          <div class="about-text">
+            <div class="about-header">
+              <h2 class="section-title">The Solution</h2>
+              <p class="section-subtitle">From frustration to innovation</p>
+            </div>
+            <p class="about-description">
+              That's when SetListify came to mind. I quickly developed a
+              prototype and was amazed with how modular our set lists became. We
+              can now plan our shows remotely or together, we can reorder tracks
+              on the fly, add mid-show notes, we can print our set-lists out,
+              share them, analyze them and just overall enjoy the process much
+              more.
+            </p>
+          </div>
+          <div class="about-image">
+            <div class="image-container">
+              <div class="image-gradient-overlay"></div>
+              <img
+                src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                alt="Music studio setup"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="about-block">
+          <div class="about-text">
+            <div class="about-header">
+              <h2 class="section-title">For Musicians, By Musicians</h2>
+              <p class="section-subtitle">Sharing with the community</p>
+            </div>
+            <p class="about-description">
+              I decided to share it with the world, because I believe musicians
+              must help each other, playing shows is difficult enough - let's
+              make it easier. SetListify is built with the real needs of
+              performing artists in mind, because we've experienced those needs
+              firsthand.
+            </p>
+          </div>
+          <div class="about-image">
+            <div class="image-container">
+              <div class="image-gradient-overlay"></div>
+              <img
+                src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                alt="Band performing on stage"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Rock?</h2>
+          <p class="cta-description">
+            No sign up, no hassle. Just click below to start using SetListify
+            for FREE!
+          </p>
+          <a href="app.html" class="btn-primary">Create Setlist</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer" id="contact">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>SetListify</h3>
+            <p>
+              Professional setlist management for musicians, bands, and
+              performers worldwide.
+            </p>
+
+            <!-- Removed the band shoutout line -->
+          </div>
+          <div class="footer-section">
+            <h3>Features</h3>
+            <p><a href="#features">Song Database</a></p>
+            <p><a href="#features">Setlist Builder</a></p>
+            <p><a href="#features">PDF Export</a></p>
+          </div>
+          <div class="footer-section">
+            <h3>Connect</h3>
+            <p class="footer-email">
+              <i class="fas fa-envelope"></i> contact@setlistify.com
+            </p>
+            <a
+              href="https://discord.gg/setlistify"
+              class="discord-button footer-discord"
+              target="_blank"
+            >
+              <i class="fab fa-discord"></i> Join Discord
+            </a>
+            <a
+              href="https://ko-fi.com/setlistify"
+              class="donation-button"
+              target="_blank"
+            >
+              <i class="fas fa-mug-hot"></i> Support Us
+            </a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 SetListify. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal">
+      <div class="modal-content">
+        <h3>Get in Touch</h3>
+        <p>
+          We'd love to hear from you! Reach out with any questions or feedback.
+        </p>
+
+        <div class="contact-buttons">
+          <a
+            href="mailto:contact@setlistify.com"
+            class="btn-secondary contact-btn"
+          >
+            <i class="fas fa-envelope"></i> Email Us
+          </a>
+          <a
+            href="https://discord.gg/setlistify"
+            class="btn-primary contact-btn"
+            target="_blank"
+          >
+            <i class="fab fa-discord"></i> Join Community
+          </a>
+        </div>
+
+        <div class="modal-actions">
+          <button id="close-contact-modal" class="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Mobile menu functionality
+      const menuToggle = document.querySelector(".menu-toggle");
+      const mobileNav = document.getElementById("mobileNav");
+      const overlay = document.getElementById("overlay");
+      const mobileLinks = document.querySelectorAll(".mobile-nav a");
+
+      function toggleMenu() {
+        menuToggle.classList.toggle("active");
+        mobileNav.classList.toggle("active");
+        overlay.classList.toggle("active");
+        document.body.classList.toggle("no-scroll");
+      }
+
+      menuToggle.addEventListener("click", toggleMenu);
+      overlay.addEventListener("click", toggleMenu);
+
+      mobileLinks.forEach((link) => {
+        link.addEventListener("click", toggleMenu);
+      });
+
+      // Mobile 3D setlist effect
+      const setlist3d = document.getElementById("setlist3d");
+
+      if (setlist3d) {
+        document.addEventListener("mousemove", (e) => {
+          if (window.innerWidth > 768) return; // Only for mobile
+
+          const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+          const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+
+          setlist3d.style.transform = `translate(-50%, -50%) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        document.addEventListener("touchmove", (e) => {
+          if (window.innerWidth > 768) return; // Only for mobile
+
+          const touch = e.touches[0];
+          const xAxis = (window.innerWidth / 2 - touch.pageX) / 25;
+          const yAxis = (window.innerHeight / 2 - touch.pageY) / 25;
+
+          setlist3d.style.transform = `translate(-50%, -50%) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on scroll
+        window.addEventListener("scroll", () => {
+          if (window.innerWidth > 768) return;
+
+          const scrollPosition = window.scrollY;
+          const rotation = scrollPosition / 10;
+          setlist3d.style.transform = `translate(-50%, -50%) rotateY(${rotation}deg) rotateX(10deg)`;
+        });
+      }
+
+      // Contact modal functionality
+      const contactLinks = document.querySelectorAll(
+        "#contact-link, .nav-links a[href='#contact'], .mobile-nav a[href='#contact']"
+      );
+      const contactModal = document.getElementById("contact-modal");
+      const closeContactModal = document.getElementById("close-contact-modal");
+
+      contactLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          contactModal.classList.add("active");
+          document.body.classList.add("no-scroll");
+        });
+      });
+
+      closeContactModal.addEventListener("click", () => {
+        contactModal.classList.remove("active");
+        document.body.classList.remove("no-scroll");
+      });
+
+      contactModal.addEventListener("click", (e) => {
+        if (e.target.id === "contact-modal") {
+          contactModal.classList.remove("active");
+          document.body.classList.remove("no-scroll");
+        }
+      });
+    </script>
+  </body>
+</html>
