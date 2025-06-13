@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Set Lister - Editor</title>
+    <title>SetListGo - Editor</title>
+    <meta http-equiv="Content-Language" content="en" />
+    <meta
+      name="description"
+      content="Free setlist management tool for live bands - Print setlists for live shows easily with SetListGo. Make your performance flow with your perfect arrangement"
+    />
+    <meta
+      name="keywords"
+      content="setlist, show, performance, band, management, free, easy, flow, arrangement, midshow, editor, tool, online, setflow, rock, live, festival"
+    />
+    <meta name="lang" content="en" />
+    <meta name="charset" content="UTF-8" />
+    <link rel="icon" href="/images/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="/images/logo.png" type="image/x-icon" />
     <link
       href="https://fonts.googleapis.com/css2?family=Metropolis:wght@100;200;300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -18,8 +31,8 @@
     <div class="app">
       <header class="header">
         <div class="logo">
-          <img src="images/logo.png" alt="SetListify Logo" height="40" />
-          <span> <a href="index.html"> SetListify</a></span>
+          <img src="images/logo.png" alt="SetListGo Logo" height="40" />
+          <span> <a href="index.html"> SetListGo</a></span>
         </div>
         <nav class="tabs">
           <button class="tab active" data-tab="database">Database</button>
@@ -126,7 +139,7 @@
     <div id="onboarding-overlay" class="onboarding-overlay">
       <div class="onboarding-tooltip" id="onboarding-tooltip">
         <div class="tooltip-content">
-          <h4 id="tooltip-title">Welcome to Set Lister!</h4>
+          <h4 id="tooltip-title">Welcome to SetListGo!</h4>
           <p id="tooltip-text">
             Let's get you started with creating amazing setlists for your
             performances.
@@ -1728,11 +1741,11 @@
 
       const onboardingSteps = [
         {
-          title: "Welcome to Set Lister!",
+          title: "Welcome to SetListGo!",
           text: "This app helps you organize songs and create setlists for your performances. Let's get started with a quick tour!",
-          target: ".header h1",
+          target: "html body div.app header.header div.logo span a",
           position: "bottom",
-          highlight: true,
+          highlight: false,
         },
         {
           title: "Song Database",
@@ -1788,7 +1801,7 @@
           title: "Switch to Setlist",
           text: "Now let's create a setlist. Click on the Setlist tab.",
           target: "[data-tab='setlist']",
-          position: "bottom",
+          position: "left",
           highlight: true,
           pulse: true,
           waitForClick: true,
@@ -1799,7 +1812,8 @@
           text: "These are all the songs in your database. Click on a few songs to add them to your setlist.",
           target: "#available-songs",
           position: "right",
-          highlight: true,
+          highlight: false,
+          waitForClick: false,
         },
         {
           title: "Your Setlist",
@@ -1868,7 +1882,7 @@
           // Start onboarding after a short delay to ensure UI is ready
           setTimeout(() => {
             startOnboarding();
-          }, 500);
+          }, 1200);
 
           // Mark as not first time for future visits
           localStorage.setItem("setlisterFirstTime", "false");
@@ -1980,7 +1994,11 @@
         } else {
           document.getElementById("onboarding-next").textContent = "Next";
         }
-
+        if (onboardingSteps[step].waitForClick) {
+          document.getElementById("onboarding-next").style.display = "none";
+        } else {
+          document.getElementById("onboarding-next").style.display = "block";
+        }
         // Position tooltip and highlight
         positionTooltip(stepConfig);
 
@@ -2518,9 +2536,9 @@
 
         if (currentSetlist.length === 0) {
           container.innerHTML = `
-            <div class="setlist-divider" data-position="0"></div>
-            <div class="empty-state">Drag songs here to build your setlist</div>
-        `;
+                <div class="setlist-divider" data-position="0"></div>
+                <div class="empty-state">Drag songs here to build your setlist</div>
+            `;
           addDividerListeners();
           return;
         }
@@ -2531,37 +2549,37 @@
         currentSetlist.forEach((item, index) => {
           if (item.type === "midshow") {
             html += `
-                <div class="midshow-item sortable-item" data-index="${index}" draggable="true">
-                    <span class="midshow-icon">M</span>
-                    <div class="setlist-content">
-                        <div class="midshow-text">${item.text}</div>
+                    <div class="midshow-item sortable-item" data-index="${index}" draggable="true">
+                        <span class="midshow-icon">M</span>
+                        <div class="setlist-content">
+                            <div class="midshow-text">${item.text}</div>
+                        </div>
+                        <div class="setlist-actions-item">
+                            <button class="btn-note" onclick="editMidshow(${index})" title="Edit">✎</button>
+                            <button class="btn-remove" onclick="removeFromSetlist(${index})" title="Remove">×</button>
+                        </div>
                     </div>
-                    <div class="setlist-actions-item">
-                        <button class="btn-note" onclick="editMidshow(${index})" title="Edit">✎</button>
-                        <button class="btn-remove" onclick="removeFromSetlist(${index})" title="Remove">×</button>
-                    </div>
-                </div>
-            `;
+                `;
           } else {
             const songData = songs.find((s) => s.name === item.song);
             const vibeClass = songData?.vibe ? `vibe-${songData.vibe}` : "";
             html += `
-      <div class="setlist-item sortable-item ${vibeClass}" data-index="${index}" draggable="true">
-                    <span class="setlist-number">${songCounter++}</span>
-                    <div class="setlist-content">
-                        <div class="setlist-song-name">${item.song}</div>
-                        ${
-                          item.note
-                            ? `<div class="setlist-note">${item.note}</div>`
-                            : ""
-                        }
+          <div class="setlist-item sortable-item ${vibeClass}" data-index="${index}" draggable="true">
+                        <span class="setlist-number">${songCounter++}</span>
+                        <div class="setlist-content">
+                            <div class="setlist-song-name">${item.song}</div>
+                            ${
+                              item.note
+                                ? `<div class="setlist-note">${item.note}</div>`
+                                : ""
+                            }
+                        </div>
+                        <div class="setlist-actions-item">
+                            <button class="btn-note" onclick="openNoteModal(${index})" title="Add note">+</button>
+                            <button class="btn-remove" onclick="removeFromSetlist(${index})" title="Remove">×</button>
+                        </div>
                     </div>
-                    <div class="setlist-actions-item">
-                        <button class="btn-note" onclick="openNoteModal(${index})" title="Add note">+</button>
-                        <button class="btn-remove" onclick="removeFromSetlist(${index})" title="Remove">×</button>
-                    </div>
-                </div>
-            `;
+                `;
           }
         });
 
@@ -2620,23 +2638,23 @@
         container.innerHTML = songs
           .map(
             (song, index) => `
-      <div class="song-item ${
-        song.vibe ? `vibe-${song.vibe}` : ""
-      }" draggable="true" data-song="${song.name}">
-          <div class="song-info">
-              <span class="song-name">${song.name}</span>
-              <div class="song-meta">
-                  ${song.vibe ? `Vibe: ${song.vibe}` : ""}
-                  ${song.vibe && song.duration ? " • " : ""}
-                  ${song.duration ? `${song.duration} min` : ""}
+          <div class="song-item ${
+            song.vibe ? `vibe-${song.vibe}` : ""
+          }" draggable="true" data-song="${song.name}">
+              <div class="song-info">
+                  <span class="song-name">${song.name}</span>
+                  <div class="song-meta">
+                      ${song.vibe ? `Vibe: ${song.vibe}` : ""}
+                      ${song.vibe && song.duration ? " • " : ""}
+                      ${song.duration ? `${song.duration} min` : ""}
+                  </div>
+              </div>
+              <div class="song-actions">
+                  <button class="btn-edit" onclick="openEditSongModal(${index})" title="Edit">✎</button>
+                  <button class="song-remove" onclick="removeSong(${index})">×</button>
               </div>
           </div>
-          <div class="song-actions">
-              <button class="btn-edit" onclick="openEditSongModal(${index})" title="Edit">✎</button>
-              <button class="song-remove" onclick="removeSong(${index})">×</button>
-          </div>
-      </div>
-  `
+      `
           )
           .join("");
       }
@@ -2653,19 +2671,19 @@
         container.innerHTML = songs
           .map(
             (song) => `
-              <div class="available-song ${
-                song.vibe ? `vibe-${song.vibe}` : ""
-              }" draggable="true" data-song="${
+                  <div class="available-song ${
+                    song.vibe ? `vibe-${song.vibe}` : ""
+                  }" draggable="true" data-song="${
               song.name
             }" onclick="addToSetlist('${song.name.replace(/'/g, "\\'")}')">
-                  <div>${song.name}</div>
-                  <div class="song-meta">
-                      ${song.vibe ? `${song.vibe}` : ""}
-                      ${song.vibe && song.duration ? " • " : ""}
-                      ${song.duration ? `${song.duration}m` : ""}
+                      <div>${song.name}</div>
+                      <div class="song-meta">
+                          ${song.vibe ? `${song.vibe}` : ""}
+                          ${song.vibe && song.duration ? " • " : ""}
+                          ${song.duration ? `${song.duration}m` : ""}
+                      </div>
                   </div>
-              </div>
-          `
+              `
           )
           .join("");
       }
@@ -2853,15 +2871,15 @@
         const modal = document.createElement("div");
         modal.className = "modal active";
         modal.innerHTML = `
-    <div class="modal-content">
-      <h4>Share Your Setlist</h4>
-      <p>Copy this URL to share your setlist:</p>
-      <textarea readonly style="width: 100%; height: 60px; margin: 10px 0;">${url}</textarea>
-      <div class="modal-actions">
-        <button class="btn-primary" onclick="this.closest('.modal').remove()">Close</button>
-      </div>
-    </div>
-  `;
+        <div class="modal-content">
+          <h4>Share Your Setlist</h4>
+          <p>Copy this URL to share your setlist:</p>
+          <textarea readonly style="width: 100%; height: 60px; margin: 10px 0;">${url}</textarea>
+          <div class="modal-actions">
+            <button class="btn-primary" onclick="this.closest('.modal').remove()">Close</button>
+          </div>
+        </div>
+      `;
         document.body.appendChild(modal);
 
         // Auto-select the URL
@@ -2873,18 +2891,22 @@
         notification.className = `notification ${type}`;
         notification.textContent = message;
         notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: ${
-      type === "success" ? "#10b981" : type === "error" ? "#ef4444" : "#3b82f6"
-    };
-    color: white;
-    padding: 12px 20px;
-    border-radius: 6px;
-    z-index: 2000;
-    animation: slideIn 0.3s ease;
-  `;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${
+          type === "success"
+            ? "#10b981"
+            : type === "error"
+            ? "#ef4444"
+            : "#3b82f6"
+        };
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      `;
 
         document.body.appendChild(notification);
 
