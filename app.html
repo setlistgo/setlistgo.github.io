@@ -1846,9 +1846,6 @@
           songs = sharedData.songs;
           currentSetlist = sharedData.setlist;
           showNotification("Setlist loaded from shared link!", "success");
-
-          switchTab("setlist");
-
           // Clear the URL parameter
           const url = new URL(window.location);
           url.searchParams.delete("share");
@@ -1869,8 +1866,8 @@
 
       // Check if it's the first time using the app
       function checkFirstTimeUser() {
-        const isFirstTime = "true";
-        //localStorage.getItem("setlisterFirstTime") !== "false";
+        const isFirstTime = 
+        localStorage.getItem("setlisterFirstTime") !== "false";
 
         if (isFirstTime) {
           // Add default songs if no songs exist
